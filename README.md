@@ -9,13 +9,14 @@ Build with Node, Koa 2, `uws` and Redis.
 
 ## API Endpoints
 
-### Prices 
+### Prices
 
 `GET https://api.lionshare.capital/api/prices`
 
 #### Params
 
 - `period: hour | day | week | month | year`
+- `currency: EUR | GBP | AUD | etc..
 
 Returns historic prices for supported digital currencies
 
@@ -37,6 +38,10 @@ Returns historic prices for supported digital currencies
 
 `GET https://api.lionshare.capital/api/markets`
 
+#### Params
+
+- `currency: EUR | GBP | AUD | etc..
+
 Returns market capitalization data
 
 > Example response:
@@ -44,7 +49,7 @@ Returns market capitalization data
 ```
 {
   "data": {
-    "BTC": 14718750986, 
+    "BTC": 14718750986,
     "ETH": 943628626,
     "LTC": 188560718,
     ...

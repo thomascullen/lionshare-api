@@ -3,6 +3,7 @@ import fetch  from 'isomorphic-fetch';
 
 import assets from '../utils/assets';
 import Exchange from '../exchange/Exchange';
+import { getCurrencyRate } from '../exchange/Currencies';
 import redis from '../db/redis';
 
 const router = new Router();
@@ -28,12 +29,20 @@ router.get('/', async (ctx) => {
       await redis.setAsync(key, JSON.stringify(prices));
     }
 
+    const currency = ctx.query.currency;
+    const currencyRate = await getCurrencyRate(currency);
+
     const assetData = {};
     for (let asset of assets) {
+      const marketData = {};
+      for (let key in markets[asset.symbol]) {
+        marketData[key] = markets[asset.symbol][key] * currencyRate
+      }
+
       assetData[asset.symbol] = {
         ...asset,
-        ...markets[asset.symbol],
-        price: prices[asset.symbol]
+        ...marketData,
+        price: prices[asset.symbol].map(price => price * currencyRate),
       };
     }
 

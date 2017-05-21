@@ -2,6 +2,7 @@ import Router     from 'koa-router';
 import fetch      from 'isomorphic-fetch';
 
 import Exchange from '../exchange/Exchange';
+import { getCurrencyRate } from '../exchange/Currencies';
 import redis from '../db/redis';
 
 const router = new Router();
@@ -17,9 +18,12 @@ router.get('/', async (ctx) => {
       await redis.setAsync('api-markets', JSON.stringify(markets));
     }
 
+    const currency = ctx.query.currency;
+    const currencyRate = await getCurrencyRate(currency);
+
     const marketCaps = {};
     for (let symbol in markets) {
-      marketCaps[symbol] = markets[symbol]['marketCap']
+      marketCaps[symbol] = (markets[symbol]['marketCap'] * currencyRate)
     }
     ctx.body = { data: marketCaps };
   } catch(e) {
